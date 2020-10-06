@@ -221,27 +221,15 @@ GAME RULES:
 // 3. Add another dice to the game, so that there are two dices now. The player looses his current score when one of them is a 1. (Hint: you will need CSS to position the second dice, so take a look at the CSS code for the first one.)
 // */
 
-var scores, roundScore, activePlayer;
+var scores, roundScore, activePlayer,gamePlaying;
 
-scores = [0, 0];
-roundScore = 0;
-activePlayer = 0;
-
-document.querySelector('.dice').style.display= 'none';
-
-document.getElementById('score-0').textContent = '0';
-document.getElementById('score-1').textContent = '0';
-document.getElementById('current-0').textContent = '0';
-document.getElementById('current-1').textContent = '0';
-
-
-
-
-
+init();
 
 document.querySelector('.btn-roll').addEventListener('click',function(){
 
-	//1.random number 
+		if(gamePlaying)
+	{
+			//1.random number 
 	var dice = Math.floor(Math.random() * 6) + 1;
 
 	//2.Display the result
@@ -250,37 +238,48 @@ document.querySelector('.btn-roll').addEventListener('click',function(){
 	diceDOM.src ='dice-' +dice +'.png';
 
 	//3.update the round score if the rolled number was not a 1
-	if(dice !==1){
+	if(dice !==1)
+	{
 		//add score
 		roundScore += dice;
 		document.querySelector('#current-' +activePlayer).textContent =roundScore;
-       }else{
+    }   else
+       {
        	   //next player
        	   nextPlayer();
 
        }
+
+	}
 });
 
 document.querySelector('.btn-hold').addEventListener('click',function(){
+	if (gamePlaying) 
+{
 	//add CURRENT score to GLOBAL score
-		scores[activePlayer] += roundScore;
+	scores[activePlayer] += roundScore;
 
 	//update the UI
 
 	document.querySelector('#score-' +activePlayer).textContent = scores[activePlayer];
 	//check if the player won the game
-	if (scores[activePlayer] >= 20) {
+	if (scores[activePlayer] >= 20)
+	 {
 		document.querySelector('#name-' + activePlayer).textContent = 'winner!';
 		document.querySelector('.dice').style.display = 'none';
 		document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
 		document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
-	}else{
+		gamePlaying = false;
+	}else
+	{
 
-	//Next player 
-	nextPlayer();
+	 //Next player 
+	 nextPlayer();
 	}
+}
+	
 
-})
+});
 
 
 function nextPlayer(){
@@ -295,4 +294,35 @@ function nextPlayer(){
        	   document.querySelector('.player-1-panel').classList.toggle('active');
 
        	   document.querySelector('.dice').style.display = 'none';
+}
+
+document.querySelector('.btn-new').addEventListener('click',init);
+
+function init() {
+	scores = [0,0];
+	activePlayer = 0;
+	roundscore = 0;
+	gamePlaying = true;
+
+document.querySelector('.dice').style.display= 'none';
+
+document.getElementById('score-0').textContent = '0';
+document.getElementById('score-1').textContent = '0';
+document.getElementById('current-0').textContent = '0';
+document.getElementById('current-1').textContent = '0';
+
+document.getElementById('name-0').textContent = 'player 1';
+document.getElementById('name-1').textContent = 'player 2';
+
+//removing the winner class from both after winning the game
+document.querySelector('.player-0-panel').classList.remove('winner');
+document.querySelector('.player-1-panel').classList.remove('winner');
+
+//also after winning remove the active class from both 
+document.querySelector('.player-0-panel').classList.remove('active');
+document.querySelector('.player-1-panel').classList.remove('active');
+
+//after winning or new game we want the first player to be active so we make it active
+document.querySelector('.player-0-panel').classList.add('active');
+
 }
